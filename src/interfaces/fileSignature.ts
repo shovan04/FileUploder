@@ -1,6 +1,7 @@
 
 export interface FileSignatureTypes {
     filename: string;
-    type: number;
-    ex: string;
+    type: string;
+    expiry: number;
+    sig?: string;
 }

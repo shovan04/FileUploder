@@ -11,7 +11,7 @@ export class FileUploadRequestDTO {
 
     @IsNotEmpty({ message: "Ex is required" })
     @IsString()
-    ex!: string;
+    expiry!: string;
 
     @IsNotEmpty({ message: "Sig is required" })
     @IsString()

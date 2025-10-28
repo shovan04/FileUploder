@@ -45,7 +45,7 @@ export default function GlobalErrorHandler(
       new ErrorResponseDTO(
         path,
         HttpResponseCode.CONFLICT,
-        "Conflict occurred. " + err?.message
+        err?.message
       )
     );
     return res.status(HttpResponseCode.CONFLICT).json(errorDto);
@@ -59,7 +59,7 @@ export default function GlobalErrorHandler(
     new ErrorResponseDTO(
       path,
       HttpResponseCode.INTERNAL_SERVER_ERROR,
-      "An unexpected error occurred. " + err?.message
+      err?.message
     )
   );
   return res.status(HttpResponseCode.INTERNAL_SERVER_ERROR).json(errorDto);

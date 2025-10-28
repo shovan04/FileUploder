@@ -19,10 +19,11 @@ server.use(cors())
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 server.use(cookieParser(COOKIE_SECRET));
-server.use(GlobalErrorHandler)
 
+// Registering Main Router
 server.use(BASE_API_PATH, mainRouter);
-
+// Global Error Handler Middleware
+server.use(GlobalErrorHandler)
 
 
 server.listen(Number(PORT), HOST, ()=>{

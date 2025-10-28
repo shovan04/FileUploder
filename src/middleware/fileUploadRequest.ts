@@ -1,25 +1,19 @@
 import { Request, Response, NextFunction } from 'express';
 import FileSignatureGen from '../utils/signature.js';
-
-
-interface PreSignedFileQuery {
-  filename: string;
-  type: number;
-  ex: string;
-  sig: string;
-}
+import { FileSignatureTypes } from '../interfaces/fileSignature.js';
 
 class FileUploadMiddleware {
     upload(req: Request, res: Response, next: NextFunction) {
-        const { filename, type, ex, sig } = req.query as unknown as PreSignedFileQuery;
+        const { filename, type, expiry, sig } = req.query as unknown as FileSignatureTypes;
 
-        const isSigValid = new FileSignatureGen().verifySignature({ filename, type, ex }, sig)
+        // Verify signature
+        const isSigValid = new FileSignatureGen().verifySignature({ filename, type, expiry }, sig as string);
         if (!isSigValid) {
             throw new Error("Invalid signature.");
         }
 
-        const isNotExpired = Number(ex) > Math.floor(Date.now() / 1000);
-        if (!isNotExpired) {
+        const isTimeExpired =  Math.floor(Date.now() / 1000) > Number(expiry);
+        if (isTimeExpired) {
             throw new Error("File upload timeout.");
         }
 

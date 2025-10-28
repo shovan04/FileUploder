@@ -7,22 +7,18 @@ export const validateDto = (
   source: "body" | "query" | "params" = "body"
 ) => {
   return async (req: Request, res: Response, next: NextFunction) => {
-    const dtoObj = plainToInstance(DtoClass, req[source]);
-    const errors = await validate(dtoObj);
+    try {
+      const dtoObj = plainToInstance(DtoClass, req[source]);
+      const errors = await validate(dtoObj);
 
-    if (errors.length > 0) {
-      // safely extract constraint messages
-      const messages = errors
-        .map((err: ValidationError) =>
-          err.constraints ? Object.values(err.constraints) : []
-        )
-        .flat();
-
-      throw new Error(`Validation failed: ${messages.join(", ")}`);
+      if (errors.length > 0) {
+        return next(errors);
+      }
+      // assign the validated DTO back, so other middlewares can trust it
+      Object.assign(req[source], dtoObj);
+      next();
+    } catch (error) {
+      next(error);
     }
-
-    // ✅ assign the validated DTO back, so other middlewares can trust it
-    req[source] = dtoObj as any;
-    next();
   };
 };
