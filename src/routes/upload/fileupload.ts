@@ -15,12 +15,6 @@ filesUploadRouter.post(
   MulterMiddleware.uploadByType("files", 10),
   FileUploadController.upload
 );
-// filesUploadRouter.post(
-//   FileUploadRoutes.PRE_SIGNED_FILE_UPLOAD,
-//   (req, res) => {
-//     return res.status(200).json({ message: "File uploaded successfully" });
-//   }
-// );
 
 filesUploadRouter.get(FileUploadRoutes.GENERATE_PRE_SIGNED_FILE_UPLOAD_URL, FileUploadController.generatePreSignedUrl);
 

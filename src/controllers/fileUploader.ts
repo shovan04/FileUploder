@@ -1,22 +1,21 @@
 import { Request, Response, NextFunction } from "express";
 import FileUploaderService from "../services/fileUploader.service.js";
 import { ResponseDTO } from "../DTOs/response.DTO.js";
+import HttpResponseCode from "../constants/httpResponseCode.js";
 class FileUploadController {
   static upload(req: Request, res: Response) {
     if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
       throw new Error("No files were uploaded.");
     }
+    const response = new ResponseDTO();
 
-    const files = req.files.map((file) => ({
-      originalName: file.originalname,
-      storedName: file.filename,
-      path: `/files/${file.filename}`,
-    }));
+    const files = req.files.map((file) => file.filename);
 
-    return res.status(200).json({
-      message: "Files uploaded successfully",
-      files,
-    });
+      response.setStatus(true);
+      response.setMessage("Files uploaded successfully");
+      response.setData({filesName: files});
+
+      return res.status(HttpResponseCode.CREATED).json(response);
   }
 
   static generatePreSignedUrl(req: Request, res: Response, next: NextFunction) {
@@ -29,7 +28,7 @@ class FileUploadController {
       response.setMessage("Pre Signed URL generated");
       response.setData({ preSignedUrl });
 
-      return res.status(200).json(response);
+      return res.status(HttpResponseCode.OK).json(response);
     } catch (error) {
       next(error);
     }

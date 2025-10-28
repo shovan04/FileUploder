@@ -9,9 +9,9 @@ class MulterMiddleware {
   private multerInstance: multer.Multer;
 
   constructor() {
+    const uploadPath = path.resolve(process.cwd(), "files");
     const storage = multer.diskStorage({
       destination: function (req, file, cb) {
-        const uploadPath = path.resolve(process.cwd(), "files");
         if (!fs.existsSync(uploadPath)) {
           fs.mkdirSync(uploadPath, { recursive: true });
         }
@@ -19,14 +19,17 @@ class MulterMiddleware {
       },
       filename: function (req, file, cb) {
         const queryFileName = req.query.filename as string;
-        cb(
-          null,
-          queryFileName +
-            "_" +
-            Date.now() +
-            "_" +
-            file.originalname.trim().replace(",", "").split(" ").join("_").toLowerCase()
-        );
+
+        // new filename
+        const sanitizedOriginal = file.originalname
+          .trim()
+          .replace(/,/g, "")
+          .replace(/\s+/g, "_")
+          .toLowerCase();
+
+        const newFileName = `${queryFileName}_${Date.now()}_${sanitizedOriginal}`;
+
+        cb(null, newFileName);
       },
     });
     this.multerInstance = multer({

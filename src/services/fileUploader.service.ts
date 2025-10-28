@@ -19,6 +19,17 @@ export default class FileUploaderService {
       `${filename}_#${expiry}`
     );
 
-    return `http://${process.env.BACKEND_URI}${process.env.BASE_API_PATH}${FileUploadRoutes.BASE_PATH}${FileUploadRoutes.PRE_SIGNED_FILE_UPLOAD}?filename=${secureFileName}&type=${fileType}&expiry=${expiry}&sig=${signature}`;
+    return `${process.env.BACKEND_URI}${process.env.BASE_API_PATH}${FileUploadRoutes.BASE_PATH}${FileUploadRoutes.PRE_SIGNED_FILE_UPLOAD}?filename=${secureFileName}&type=${fileType}&expiry=${expiry}&sig=${signature}`;
+  }
+
+  validatePreSignedUri(uri: string, expiry: number) {
+    const checkUri = EncryptionUtil.decryptAndValidateFilename(uri);
+
+    const decryptedExpiry = checkUri?.split("_#")[1];
+
+    if (expiry != Number(decryptedExpiry)) {
+      throw new Error("Nice Try Bitch!");
+    }
+    return checkUri?.split("_#")[0] as string;
   }
 }
